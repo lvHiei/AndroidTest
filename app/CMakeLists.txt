@@ -24,7 +24,12 @@ add_library( # Sets the name of the library.
              # file are automatically included.
              src/main/cpp/audioTest/AudioFrameDecoder.cpp
              src/main/cpp/audioTest/AudioStreamDecoder.cpp
+             src/main/cpp/audioTest/CAACHe2Lc.cpp
              src/main/cpp/util/TimeUtil.cpp
+             src/main/cpp/format/VVAVFormat.cpp
+             src/main/cpp/format/Mp4Muxer.cpp
+             src/main/cpp/codec/VVAVEncoder.cpp
+             src/main/cpp/codec/VVAVDecoder.cpp
              src/main/cpp/native-lib.cpp )
 
 # Searches for a specified prebuilt library and stores the path as a

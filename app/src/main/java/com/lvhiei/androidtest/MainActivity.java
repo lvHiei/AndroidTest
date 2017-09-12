@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.lvhiei.androidtest.log.ATLog;
+import com.lvhiei.androidtest.test.AACHe2LcTest;
 import com.lvhiei.androidtest.test.AudioHardDecoderTest;
 import com.lvhiei.androidtest.test.AudioSoftDecoderTest;
 import com.lvhiei.androidtest.test.BaseTest;
@@ -32,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
             switch (v.getId()){
+                case R.id.btn_test_aacHe2lc:
+                {
+                    mTester = new AACHe2LcTest();
+                }
+                    break;
                 case R.id.btn_test_audioSoftDecode:
                 {
                     mTester = new AudioSoftDecoderTest();
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        findViewById(R.id.btn_test_aacHe2lc).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioSoftDecode).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioHardDecode).setOnClickListener(mOnClickListener);
     }

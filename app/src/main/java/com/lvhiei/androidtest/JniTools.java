@@ -8,8 +8,9 @@ package com.lvhiei.androidtest;
 public class JniTools {
     // Used to load the 'native-lib' library on application startup.
     static {
+        System.loadLibrary("ffmpeg");
         System.loadLibrary("native-lib");
     }
 
-
+    public static native void nativeAacHE2LC(String heAacPath, String lcAacpath);
 }
