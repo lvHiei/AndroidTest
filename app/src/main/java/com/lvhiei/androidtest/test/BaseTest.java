@@ -72,8 +72,10 @@ public class BaseTest implements ITest {
                         mHandler.sendEmptyMessage(MSG_GET_CPU);
                     }
 
-                    synchronized (mLock){
-                        mLock.wait(GET_CPU_DELAY_TIME);
+                    if(mIsTesting){
+                        synchronized (mLock){
+                            mLock.wait(GET_CPU_DELAY_TIME);
+                        }
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
