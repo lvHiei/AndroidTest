@@ -21,7 +21,7 @@ public class ATLog {
         public static final int LEVEL_SILNECE = 100;
     }
 
-    private int m_iLogLevel = LogLevel.LEVEL_SILNECE;
+    private int m_iLogLevel = LogLevel.LEVEL_DEBUG;
 
     public static boolean ms_bEnableFileLog = false;
 

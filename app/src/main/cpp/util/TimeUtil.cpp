@@ -13,7 +13,6 @@ extern "C"{
 
 #include "TimeUtil.h"
 
-namespace vvplayer {
 
 uint32_t TimeUtil::GetTickCount()
 {
@@ -40,6 +39,5 @@ uint64_t TimeUtil::GetTickCount64()
     return mt;
 }
 
-}
 
 

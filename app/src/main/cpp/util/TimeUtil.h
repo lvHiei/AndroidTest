@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 
-namespace vvplayer {
 
 class TimeUtil{
 public:
@@ -24,6 +23,5 @@ public:
 	static uint64_t GetTickCount64();
 };
 
-}
 
 #endif /* OFFSCREEN_TIMEUTIL_H_ */

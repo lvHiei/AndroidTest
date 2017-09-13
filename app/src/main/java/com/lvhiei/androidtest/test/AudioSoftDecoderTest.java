@@ -13,7 +13,6 @@ public class AudioSoftDecoderTest extends BaseTest {
 
     //    private String heAAcPath = Environment.getExternalStorageDirectory() + "/android_test/he.aac";
     //    private String lcAAcPath = Environment.getExternalStorageDirectory() + "/android_test/lc.aac";
-    private String heAAcPath ="/sdcard/android_test/he.aac";
     private String lcAAcPath ="/sdcard/android_test/lc.aac";
 
 
@@ -21,4 +20,15 @@ public class AudioSoftDecoderTest extends BaseTest {
 
     }
 
+
+    @Override
+    protected int localTest() {
+
+        File file = new File(lcAAcPath);
+        if(file.exists()){
+            JniTools.nativeAudioSoftDecoder(lcAAcPath);
+        }
+
+        return 0;
+    }
 }

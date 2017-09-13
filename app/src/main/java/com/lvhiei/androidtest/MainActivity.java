@@ -27,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
             mTvTestStatus.setText(String.format("Test ended, err:%d,duration:%d", errcode, duration));
             mTvTestStatus.setTextColor(mTvTestStatus.getResources().getColor(R.color.green));
         }
+
+        @Override
+        public void onCPUUseRate(int userRate, int sysRate) {
+            mTvTestStatus.setText(String.format("Testing ucpu:%d,scpu:%d", userRate, sysRate));
+        }
     };
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {

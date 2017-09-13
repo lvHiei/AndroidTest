@@ -130,9 +130,13 @@ void CAudioStreamDecode::run()
     AVPacket packet;
     av_init_packet(&packet);
 
-    for(int i = 0; i < VV_MAX_MICCOUNT; ++i){
-        m_pAudioFrameDecode[i]->Init(m_pSampleRate[i], m_pChannels[i]);
-    }
+//    FILE* pFILE[VV_MAX_MICCOUNT];
+//    char buf[128] = {0};
+//    for(int i = 0; i < VV_MAX_MICCOUNT; ++i){
+//        m_pAudioFrameDecode[i]->Init(m_pSampleRate[i], m_pChannels[i]);
+//        sprintf(buf, "/sdcard/android_test/%d.pcm", i);
+//        pFILE[i] = fopen(buf, "w");
+//    }
 
     char pPCMData[VV_PCM_BUFFER_LEN] = {0};
     char pAACData[VV_AAC_BUFFER_LEN] = {0};
@@ -141,8 +145,10 @@ void CAudioStreamDecode::run()
     int64_t pts;
     int aacLen;
     int pcmLen;
-    bool ret;
+    int ret;
     int count = 0;
+    int npakcets = 0;
+    uint32_t lastLogTime = TimeUtil::GetTickCount();
     while(!m_bWantStop)
     {
         // first check reset samplerate and channel
@@ -167,19 +173,32 @@ void CAudioStreamDecode::run()
 
         if(index == 0){
             av_packet_unref(&packet);
-            m_pFormat->read_packet(m_pFormatCtx, &packet);
+            ret = m_pFormat->read_packet(m_pFormatCtx, &packet);
+            if(ret < 0){
+                break;
+            }else{
+                ++npakcets;
+            }
         }
 
         // third decode aac data
         pcmLen = VV_PCM_BUFFER_LEN;
         ret = m_pAudioFrameDecode[index]->Decode((char *) packet.data, packet.size, pPCMData, pcmLen);
-
-        LOGI("CAudioStreamDecode index:%d,ret:%d,aacLen:%d,pcmLen:%d,pts:%lld", index, ret, aacLen, pcmLen, pts);
+        uint32_t now = TimeUtil::GetTickCount();
+        if(now - lastLogTime > 1000){
+            LOGI("CAudioStreamDecode index:%d,ret:%d,aacLen:%d,pcmLen:%d,pts:%lld,packets:%d", index, ret, aacLen, pcmLen, pts, npakcets);
+            lastLogTime = now;
+        }
         // fourth put pcm data
         if(ret){
+//            fwrite(pPCMData, 1, pcmLen, pFILE[index]);
 //            putPCMData(index, pPCMData, pcmLen, pts);
         }
     }
+
+//    for(int i = 0; i < VV_MAX_MICCOUNT; ++i){
+//        fclose(pFILE[i]);
+//    }
 
     release();
 }
