@@ -12,6 +12,7 @@ import com.lvhiei.androidtest.test.AudioHardDecoderTest;
 import com.lvhiei.androidtest.test.AudioSoftDecoderTest;
 import com.lvhiei.androidtest.test.BaseTest;
 import com.lvhiei.androidtest.test.ITest;
+import com.lvhiei.androidtest.test.MediaPlayer4AudioTest;
 
 public class MainActivity extends AppCompatActivity {
     private ATLog logger = new ATLog(this.getClass().getName());
@@ -57,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
                     mTester = new AudioHardDecoderTest();
                 }
                     break;
+                case R.id.btn_test_audio4MediaPlayer:
+                {
+                    mTester = new MediaPlayer4AudioTest();
+                }
+                    break;
                 default:
                 {
                     mTester = new BaseTest();
@@ -84,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_test_aacHe2lc).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioSoftDecode).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioHardDecode).setOnClickListener(mOnClickListener);
+        findViewById(R.id.btn_test_audio4MediaPlayer).setOnClickListener(mOnClickListener);
     }
 
 }

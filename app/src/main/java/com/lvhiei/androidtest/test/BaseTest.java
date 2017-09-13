@@ -18,6 +18,8 @@ import java.io.InputStreamReader;
 public class BaseTest implements ITest {
     private ATLog logger = new ATLog(this.getClass().getName());
 
+    public static final boolean msGetCPURateInProgress = true;
+
     protected boolean mIsTesting = false;
 
     public static final int MSG_TEST_ENDED = 0;
@@ -32,15 +34,17 @@ public class BaseTest implements ITest {
 
     private String local_app = "com.lvhiei.androidtest";
 
-    private int mUserCPURate = 0;
-    private int mSysCPURate = 0;
+    protected int mUserCPURate = 0;
+    protected int mSysCPURate = 0;
 
 
     protected ITestCallback mTestCallback = null;
 
     private Thread mWorkThread = null;
-    private Thread mGetCPUThread = null;
-    private Object mLock = new Object();
+    protected Thread mGetCPUThread = null;
+    protected Object mLock = new Object();
+
+
 
     private Runnable mRunnable = new Runnable() {
         @Override
@@ -61,7 +65,7 @@ public class BaseTest implements ITest {
         }
     };
 
-    private Runnable mGetCPURunnable = new Runnable() {
+    protected Runnable mGetCPURunnable = new Runnable() {
         @Override
         public void run() {
             while (mIsTesting){
@@ -85,8 +89,8 @@ public class BaseTest implements ITest {
         }
     };
 
-    private Handler mHandler;
-    private Handler.Callback mHandleCallback = new Handler.Callback() {
+    protected Handler mHandler;
+    protected Handler.Callback mHandleCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what){
@@ -127,9 +131,7 @@ public class BaseTest implements ITest {
 
         mIsTesting = true;
         mWorkThread.start();
-
-        mGetCPUThread = new Thread(mGetCPURunnable);
-        mGetCPUThread.start();
+        asynGetCpuRateIfNeeded();
     }
 
     @Override
@@ -142,7 +144,14 @@ public class BaseTest implements ITest {
         return 0;
     }
 
-    private int getCpuRate(){
+    protected void asynGetCpuRateIfNeeded(){
+        if(msGetCPURateInProgress){
+            mGetCPUThread = new Thread(mGetCPURunnable);
+            mGetCPUThread.start();
+        }
+    }
+
+    protected int getCpuRate(){
         StringBuilder tv = new StringBuilder();
         int rate = 0;
 

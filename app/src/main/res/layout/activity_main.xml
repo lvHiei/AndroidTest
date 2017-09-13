@@ -42,6 +42,12 @@
                 android:text="音频4路硬解解cpu"
                 />
 
+            <Button
+                android:id="@+id/btn_test_audio4MediaPlayer"
+                style="@style/TestButton"
+                android:text="音频4路mediaplayer播放"
+                />
+
 
         </LinearLayout>
     </ScrollView>
