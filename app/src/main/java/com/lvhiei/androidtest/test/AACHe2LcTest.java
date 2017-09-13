@@ -13,40 +13,22 @@ import java.io.File;
 
 public class AACHe2LcTest extends BaseTest {
 
-    private Thread mWorkThread = null;
-
     //    private String heAAcPath = Environment.getExternalStorageDirectory() + "/android_test/he.aac";
     //    private String lcAAcPath = Environment.getExternalStorageDirectory() + "/android_test/lc.aac";
     private String heAAcPath ="/sdcard/android_test/he.aac";
     private String lcAAcPath ="/sdcard/android_test/lc.aac";
-
-    private Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            long begin = System.currentTimeMillis();
-
-            File file = new File(heAAcPath);
-            if(file.exists()){
-                JniTools.nativeAacHE2LC(heAAcPath, lcAAcPath);
-            }
-
-            long end = System.currentTimeMillis();
-            if(mTestCallback != null){
-                mTestCallback.onTest(end - begin);
-            }
-            mIsTesting = false;
-        }
-    };
 
     public AACHe2LcTest(){
 
     }
 
     @Override
-    public void doTest() {
-        mWorkThread = new Thread(mRunnable);
+    protected int localTest() {
+        File file = new File(heAAcPath);
+        if(file.exists()){
+            JniTools.nativeAacHE2LC(heAAcPath, lcAAcPath);
+        }
 
-        mIsTesting = true;
-        mWorkThread.start();
+        return 0;
     }
 }

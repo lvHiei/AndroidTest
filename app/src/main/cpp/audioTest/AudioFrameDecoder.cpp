@@ -175,15 +175,18 @@ bool CAudioFrameDecode::Decode(char* lpData, int liDataLen, char* lpDecodeData, 
     if(liDataLen > MAX_AUDIO_PACKLEN){
         return false;
     }
-    uint8_t packetBuf[MAX_AUDIO_PACKLEN + ADTS_HEADER_SIZE];
-    int  packetLen = MAX_AUDIO_PACKLEN + ADTS_HEADER_SIZE;
-    //写入ADTS头
-    ff_adts_write_frame_header((uint8_t*)packetBuf, liDataLen, 0, m_nChannels ,0, m_nSampleRate);
-    //将AAC数据拷贝到ADTS头之后
-    memcpy(packetBuf+ADTS_HEADER_SIZE, lpData, liDataLen);
-    packetLen = liDataLen+ADTS_HEADER_SIZE;
-    m_packet.data = packetBuf;
-    m_packet.size = packetLen;
+//    uint8_t packetBuf[MAX_AUDIO_PACKLEN + ADTS_HEADER_SIZE];
+//    int  packetLen = MAX_AUDIO_PACKLEN + ADTS_HEADER_SIZE;
+//    //写入ADTS头
+//    ff_adts_write_frame_header((uint8_t*)packetBuf, liDataLen, 0, m_nChannels ,0, m_nSampleRate);
+//    //将AAC数据拷贝到ADTS头之后
+//    memcpy(packetBuf+ADTS_HEADER_SIZE, lpData, liDataLen);
+//    packetLen = liDataLen+ADTS_HEADER_SIZE;
+//    m_packet.data = packetBuf;
+//    m_packet.size = packetLen;
+
+    m_packet.data = (uint8_t *) lpData;
+    m_packet.size = liDataLen;
     int len, got_frame;
     //char *outbuf;
     //int  outbuflen = 16384+4096;

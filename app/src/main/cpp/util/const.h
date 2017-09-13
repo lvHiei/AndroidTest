@@ -15,7 +15,7 @@ namespace vvplayer{
 
 #define TIME_OVER_FLOW              1000000000
 
-#define VV_MAX_MICCOUNT             2
+#define VV_MAX_MICCOUNT             4
 #define VV_PCM_BUFFER_LEN           16384
 #define VV_AAC_BUFFER_LEN           1000
 #define VV_ONE_PCM_BUFFER_LEN       1024

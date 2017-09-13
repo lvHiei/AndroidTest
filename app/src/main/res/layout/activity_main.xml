@@ -16,6 +16,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tv_test_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Test Status"
+                android:textColor="@color/red"/>
+
             <Button
                 android:id="@+id/btn_test_aacHe2lc"
                 style="@style/TestButton"

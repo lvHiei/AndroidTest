@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.lvhiei.androidtest.log.ATLog;
 import com.lvhiei.androidtest.test.AACHe2LcTest;
@@ -17,11 +18,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private BaseTest mTester = null;
+    private TextView mTvTestStatus = null;
 
     private BaseTest.ITestCallback mTestCallback = new BaseTest.ITestCallback() {
         @Override
-        public void onTest(long duration) {
-            logger.i(String.format("test end cost %d ms", duration));
+        public void onTest(int errcode, long duration) {
+            logger.i(String.format("test end cost %d ms, err:%d", duration, errcode));
+            mTvTestStatus.setText(String.format("Test ended, err:%d,duration:%d", errcode, duration));
+            mTvTestStatus.setTextColor(mTvTestStatus.getResources().getColor(R.color.green));
         }
     };
 
@@ -57,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
             mTester.setTestCallback(mTestCallback);
             mTester.doTest();
-
+            mTvTestStatus.setText("Testing.....");
+            mTvTestStatus.setTextColor(mTvTestStatus.getResources().getColor(R.color.red));
         }
     };
 
@@ -70,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        mTvTestStatus = (TextView) findViewById(R.id.tv_test_status);
         findViewById(R.id.btn_test_aacHe2lc).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioSoftDecode).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioHardDecode).setOnClickListener(mOnClickListener);

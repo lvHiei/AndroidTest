@@ -2,6 +2,7 @@
 #include <string>
 
 #include "audioTest/CAACHe2Lc.h"
+#include "audioTest/AudioStreamDecoder.h"
 
 extern "C"
 jstring
@@ -33,4 +34,22 @@ Java_com_lvhiei_androidtest_JniTools_nativeAacHE2LC(
 
     env->ReleaseStringUTFChars(jhePath, hePath);
     env->ReleaseStringUTFChars(jlcPath, lcPath);
+}
+
+
+extern "C"
+void
+Java_com_lvhiei_androidtest_JniTools_nativeAudioSoftDecoder(
+        JNIEnv *env,
+        jclass clazz,
+        jstring jaacPath) {
+
+    const char* aacPath = env->GetStringUTFChars(jaacPath, NULL);
+
+    CAudioStreamDecode* pAudioDeocder = new CAudioStreamDecode();
+    pAudioDeocder->setPath(aacPath);
+    pAudioDeocder->start();
+    delete pAudioDeocder;
+
+    env->ReleaseStringUTFChars(jaacPath, aacPath);
 }

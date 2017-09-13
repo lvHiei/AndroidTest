@@ -12,5 +12,10 @@ public class JniTools {
         System.loadLibrary("native-lib");
     }
 
+
     public static native void nativeAacHE2LC(String heAacPath, String lcAacpath);
+
+
+    public static native void nativeAudioSoftDecoder(String aacPath);
+
 }

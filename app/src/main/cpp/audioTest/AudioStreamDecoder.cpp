@@ -19,8 +19,8 @@ CAudioStreamDecode::CAudioStreamDecode()
 {
     for(int i = 0; i < VV_MAX_MICCOUNT; ++i){
         m_pAudioFrameDecode[i] = new CAudioFrameDecode();
-        m_pSampleRate[i] = 0;
-        m_pChannels[i] = 0;
+        m_pSampleRate[i] = 44100;
+        m_pChannels[i] = 2;
         m_pWantReset[i] = false;
         m_pDisableAudio[i] = true;
     }
@@ -54,17 +54,18 @@ void CAudioStreamDecode::Reset(int micIndex, int liSampleRate, int liChannels)
 
 void CAudioStreamDecode::start()
 {
-    if(m_bIsStarted){
-        return;
-    }
-
-    m_bWantStop = false;
-    int res = pthread_create(&m_ThreadId, NULL, audioDecodeThreadFun, this);
-    if (0 != res) {
-        LOGE("CAudioStreamDecode pthread_create error.");
-    } else {
-        m_bIsStarted = true;
-    }
+//    if(m_bIsStarted){
+//        return;
+//    }
+//
+//    m_bWantStop = false;
+//    int res = pthread_create(&m_ThreadId, NULL, audioDecodeThreadFun, this);
+//    if (0 != res) {
+//        LOGE("CAudioStreamDecode pthread_create error.");
+//    } else {
+//        m_bIsStarted = true;
+//    }
+    run();
 }
 
 
@@ -77,6 +78,13 @@ void CAudioStreamDecode::disableAudio(int micIndex)
 {
     m_pDisableAudio[micIndex] = true;
 //    handleDisableAudio();
+}
+
+
+void CAudioStreamDecode::setPath(const char *aacPath)
+{
+    memset(m_pAACPath, 0, 1024);
+    strcpy(m_pAACPath, aacPath);
 }
 
 
@@ -115,6 +123,13 @@ void CAudioStreamDecode::stop()
 
 void CAudioStreamDecode::run()
 {
+    m_pFormat = new VVAVFormat();
+    m_pFormatCtx = m_pFormat->alloc_foramt_context();
+
+    m_pFormat->open_input_file(&m_pFormatCtx, m_pAACPath);
+    AVPacket packet;
+    av_init_packet(&packet);
+
     for(int i = 0; i < VV_MAX_MICCOUNT; ++i){
         m_pAudioFrameDecode[i]->Init(m_pSampleRate[i], m_pChannels[i]);
     }
@@ -146,18 +161,23 @@ void CAudioStreamDecode::run()
         memset(pAACData, 0, VV_AAC_BUFFER_LEN);
 
 //        aacLen = QueueManager::getInstance()->getAudioDecodeQueue(index)->trypop(pAACData, VV_AAC_BUFFER_LEN, timeOut, pts);
-        if(aacLen <= 0){
-            continue;
+//        if(aacLen <= 0){
+//            continue;
+//        }
+
+        if(index == 0){
+            av_packet_unref(&packet);
+            m_pFormat->read_packet(m_pFormatCtx, &packet);
         }
 
         // third decode aac data
         pcmLen = VV_PCM_BUFFER_LEN;
-        ret = m_pAudioFrameDecode[index]->Decode(pAACData, aacLen, pPCMData, pcmLen);
+        ret = m_pAudioFrameDecode[index]->Decode((char *) packet.data, packet.size, pPCMData, pcmLen);
 
         LOGI("CAudioStreamDecode index:%d,ret:%d,aacLen:%d,pcmLen:%d,pts:%lld", index, ret, aacLen, pcmLen, pts);
         // fourth put pcm data
         if(ret){
-            putPCMData(index, pPCMData, pcmLen, pts);
+//            putPCMData(index, pPCMData, pcmLen, pts);
         }
     }
 

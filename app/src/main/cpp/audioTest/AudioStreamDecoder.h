@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include "AudioFrameDecoder.h"
 #include "../util/const.h"
+#include "../format/VVAVFormat.h"
 
 static void * audioDecodeThreadFun(void *context);
 
@@ -24,6 +25,7 @@ public:
     void enableAudio(int micIndex);
     void disableAudio(int micIndex);
 
+    void setPath(const char* aacPath);
 public:
     void start();
     void stop();
@@ -47,6 +49,11 @@ private:
     pthread_t m_ThreadId;
     bool m_bWantStop;
     bool m_bIsStarted;
+
+private:
+    VVAVFormat* m_pFormat;
+    AVFormatContext* m_pFormatCtx;
+    char m_pAACPath[1024];
 };
 
 
