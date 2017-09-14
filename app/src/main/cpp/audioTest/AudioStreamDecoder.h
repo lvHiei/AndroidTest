@@ -26,6 +26,7 @@ public:
     void disableAudio(int micIndex);
 
     void setPath(const char* aacPath);
+    void setThreadCount(int threadcount);
 public:
     void start();
     void stop();
@@ -54,6 +55,9 @@ private:
     VVAVFormat* m_pFormat;
     AVFormatContext* m_pFormatCtx;
     char m_pAACPath[1024];
+
+private:
+    int m_nThreadCount;
 };
 
 

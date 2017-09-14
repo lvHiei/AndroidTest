@@ -56,7 +56,7 @@ public class MediaPlayer4AudioTest extends BaseTest {
     }
 
 
-    private void internalRun(int idx){
+    protected void internalRun(int idx){
         String aacpath = "/sdcard/android_test/lc30_" + idx + ".aac";
         try {
             mMediaPlayers[idx].setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -65,25 +65,7 @@ public class MediaPlayer4AudioTest extends BaseTest {
                     if(null != mp){
                         mp.release();
 
-                        boolean allMediaPlayerReleased = true;
-                        for(int i = 0; i < MIC_COUNT; ++i){
-                            if(mp == mMediaPlayers[i]){
-                                mMediaPlayerReleased[i] = true;
-                            }
-
-                            allMediaPlayerReleased = allMediaPlayerReleased && mMediaPlayerReleased[i];
-                        }
-
-                        if(allMediaPlayerReleased){
-                            mEndTestTime = System.currentTimeMillis();
-                            if(mHandler != null){
-                                Message msg = mHandler.obtainMessage(MSG_TEST_ENDED);
-                                msg.arg1 = 0;
-                                msg.obj = mEndTestTime - mBeingTestTime;
-                                mHandler.sendMessage(msg);
-                            }
-                            mIsTesting = false;
-                        }
+                        onMediaPlayerReleased(mp);
                     }
                 }
             });
@@ -92,6 +74,22 @@ public class MediaPlayer4AudioTest extends BaseTest {
             mMediaPlayers[idx].start();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    protected synchronized void onMediaPlayerReleased(MediaPlayer mp){
+        boolean allMediaPlayerReleased = true;
+        for(int i = 0; i < MIC_COUNT; ++i){
+            if(mp == mMediaPlayers[i]){
+                mMediaPlayerReleased[i] = true;
+            }
+
+            allMediaPlayerReleased = allMediaPlayerReleased && mMediaPlayerReleased[i];
+        }
+
+        if(allMediaPlayerReleased){
+            mEndTestTime = System.currentTimeMillis();
+            onTestThreadEnded(0, mEndTestTime - mBeingTestTime);
         }
     }
 }

@@ -24,6 +24,8 @@ CAudioStreamDecode::CAudioStreamDecode()
         m_pWantReset[i] = false;
         m_pDisableAudio[i] = true;
     }
+
+    m_nThreadCount = 1;
 }
 
 CAudioStreamDecode::~CAudioStreamDecode()
@@ -85,6 +87,12 @@ void CAudioStreamDecode::setPath(const char *aacPath)
 {
     memset(m_pAACPath, 0, 1024);
     strcpy(m_pAACPath, aacPath);
+}
+
+
+void CAudioStreamDecode::setThreadCount(int threadcount)
+{
+    m_nThreadCount = threadcount;
 }
 
 
@@ -160,7 +168,7 @@ void CAudioStreamDecode::run()
         }
 
         // second get the latest aac pkt data
-        int index = count % VV_MAX_MICCOUNT;
+        int index = count % (VV_MAX_MICCOUNT / m_nThreadCount);
         ++count;
 
         memset(pPCMData, 0, VV_PCM_BUFFER_LEN);
@@ -196,6 +204,7 @@ void CAudioStreamDecode::run()
         }
     }
 
+    LOGI("CAudioStreamDecode ended, packets:%d", npakcets);
 //    for(int i = 0; i < VV_MAX_MICCOUNT; ++i){
 //        fclose(pFILE[i]);
 //    }

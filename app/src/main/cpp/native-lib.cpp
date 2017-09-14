@@ -42,12 +42,14 @@ void
 Java_com_lvhiei_androidtest_JniTools_nativeAudioSoftDecoder(
         JNIEnv *env,
         jclass clazz,
-        jstring jaacPath) {
+        jstring jaacPath,
+        jint threadCount) {
 
     const char* aacPath = env->GetStringUTFChars(jaacPath, NULL);
 
     CAudioStreamDecode* pAudioDeocder = new CAudioStreamDecode();
     pAudioDeocder->setPath(aacPath);
+    pAudioDeocder->setThreadCount(threadCount);
     pAudioDeocder->start();
     delete pAudioDeocder;
 

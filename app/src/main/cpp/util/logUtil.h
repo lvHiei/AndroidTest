@@ -7,7 +7,6 @@
 
 #include <android/log.h>
 
-namespace vvplayer {
 
 #define TAG "NativeRenderer"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,TAG ,__VA_ARGS__)
@@ -22,7 +21,6 @@ namespace vvplayer {
 //#define LOGW(...)
 //#define LOGE(...)
 //#define LOGF(...)
-}
 
 
 

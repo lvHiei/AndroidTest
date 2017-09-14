@@ -36,7 +36,13 @@
             <Button
                 android:id="@+id/btn_test_audioSoftDecode"
                 style="@style/TestButton"
-                android:text="音频4路软解cpu"
+                android:text="音频4路软解cpu(单线程)"
+                />
+
+            <Button
+                android:id="@+id/btn_test_audioSoftMutiDecode"
+                style="@style/TestButton"
+                android:text="音频4路软解cpu(多线程)"
                 />
 
             <Button

@@ -26,7 +26,7 @@ public class AudioSoftDecoderTest extends BaseTest {
 
         File file = new File(lcAAcPath);
         if(file.exists()){
-            JniTools.nativeAudioSoftDecoder(lcAAcPath);
+            JniTools.nativeAudioSoftDecoder(lcAAcPath, 1);
         }
 
         return 0;

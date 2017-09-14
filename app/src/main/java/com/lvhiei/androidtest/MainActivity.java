@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.lvhiei.androidtest.log.ATLog;
 import com.lvhiei.androidtest.test.AACHe2LcTest;
 import com.lvhiei.androidtest.test.AudioHardDecoderTest;
+import com.lvhiei.androidtest.test.AudioSoftDecoder4Test;
 import com.lvhiei.androidtest.test.AudioSoftDecoderTest;
 import com.lvhiei.androidtest.test.BaseTest;
 import com.lvhiei.androidtest.test.ITest;
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
                     mTester = new AudioSoftDecoderTest();
                 }
                     break;
+                case R.id.btn_test_audioSoftMutiDecode:
+                {
+                    mTester = new AudioSoftDecoder4Test();
+                }
+                    break;
                 case R.id.btn_test_audioHardDecode:
                 {
                     mTester = new AudioHardDecoderTest();
@@ -89,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         mTvTestStatus = (TextView) findViewById(R.id.tv_test_status);
         findViewById(R.id.btn_test_aacHe2lc).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioSoftDecode).setOnClickListener(mOnClickListener);
+        findViewById(R.id.btn_test_audioSoftMutiDecode).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioHardDecode).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audio4MediaPlayer).setOnClickListener(mOnClickListener);
     }

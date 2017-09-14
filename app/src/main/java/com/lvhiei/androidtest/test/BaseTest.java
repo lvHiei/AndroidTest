@@ -52,16 +52,8 @@ public class BaseTest implements ITest {
             long begin = System.currentTimeMillis();
             int errcode = localTest();
             long end = System.currentTimeMillis();
-            if(null != mHandler){
-                Message message = mHandler.obtainMessage(MSG_TEST_ENDED);
-                message.arg1 = errcode;
-                message.obj = end - begin;
-                mHandler.sendMessage(message);
-            }
-            mIsTesting = false;
-            synchronized (mLock){
-                mLock.notify();
-            }
+
+            onTestThreadEnded(errcode, end - begin);
         }
     };
 
@@ -142,6 +134,20 @@ public class BaseTest implements ITest {
     protected int localTest(){
         logger.i("local testing");
         return 0;
+    }
+
+    protected void onTestThreadEnded(int errcode, long duration){
+        mIsTesting = false;
+        synchronized (mLock){
+            mLock.notifyAll();
+        }
+
+        if(null != mHandler){
+            Message message = mHandler.obtainMessage(MSG_TEST_ENDED);
+            message.arg1 = errcode;
+            message.obj = duration;
+            mHandler.sendMessage(message);
+        }
     }
 
     protected void asynGetCpuRateIfNeeded(){

@@ -16,6 +16,5 @@ public class JniTools {
     public static native void nativeAacHE2LC(String heAacPath, String lcAacpath);
 
 
-    public static native void nativeAudioSoftDecoder(String aacPath);
-
+    public static native void nativeAudioSoftDecoder(String aacPath, int threadcount);
 }

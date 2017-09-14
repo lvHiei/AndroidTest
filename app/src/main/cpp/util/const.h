@@ -8,8 +8,6 @@
 #ifndef OFFSCREEN_CONST_H_
 #define OFFSCREEN_CONST_H_
 
-namespace vvplayer{
-
 #define POP_TIMEOUT					100
 #define FLOAT_PRECISION             0.00001
 
@@ -61,7 +59,5 @@ enum {
     YUV_FMT_NV12,
     YUV_FMT_NV21,
 };
-
-}
 
 #endif /* OFFSCREEN_CONST_H_ */
