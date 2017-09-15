@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
 public class BaseTest implements ITest {
     private ATLog logger = new ATLog(this.getClass().getName());
 
-    public static final boolean msGetCPURateInProgress = true;
+    public static final boolean msGetCPURateInProgress = false;
 
     protected boolean mIsTesting = false;
 
@@ -40,13 +40,13 @@ public class BaseTest implements ITest {
 
     protected ITestCallback mTestCallback = null;
 
-    private Thread mWorkThread = null;
+    protected Thread mWorkThread = null;
     protected Thread mGetCPUThread = null;
     protected Object mLock = new Object();
 
 
 
-    private Runnable mRunnable = new Runnable() {
+    protected Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
             long begin = System.currentTimeMillis();
@@ -118,7 +118,7 @@ public class BaseTest implements ITest {
 
     @Override
     public void doTest() {
-        logger.i("dotest");
+        logger.info("dotest");
         mWorkThread = new Thread(mRunnable);
 
         mIsTesting = true;
@@ -132,7 +132,7 @@ public class BaseTest implements ITest {
     }
 
     protected int localTest(){
-        logger.i("local testing");
+        logger.info("local testing");
         return 0;
     }
 
@@ -191,7 +191,7 @@ public class BaseTest implements ITest {
             e.printStackTrace();
         }
 
-        logger.i("cpu:" + tv);
+        logger.info("cpu:" + tv);
         return rate;
     }
 }

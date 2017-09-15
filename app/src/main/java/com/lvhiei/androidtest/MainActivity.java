@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private BaseTest.ITestCallback mTestCallback = new BaseTest.ITestCallback() {
         @Override
         public void onTest(int errcode, long duration) {
-            logger.i(String.format("test end cost %d ms, err:%d", duration, errcode));
+            logger.info(String.format("test end cost %d ms, err:%d", duration, errcode));
             mTvTestStatus.setText(String.format("Test ended, err:%d,duration:%d", errcode, duration));
             mTvTestStatus.setTextColor(mTvTestStatus.getResources().getColor(R.color.green));
         }

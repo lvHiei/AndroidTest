@@ -3,6 +3,7 @@
 
 #include "audioTest/CAACHe2Lc.h"
 #include "audioTest/AudioStreamDecoder.h"
+#include "audioTest/AacReader.h"
 
 extern "C"
 jstring
@@ -54,4 +55,62 @@ Java_com_lvhiei_androidtest_JniTools_nativeAudioSoftDecoder(
     delete pAudioDeocder;
 
     env->ReleaseStringUTFChars(jaacPath, aacPath);
+}
+
+
+
+extern "C"
+jlong
+Java_com_lvhiei_androidtest_JniTools_nativeOpenAudioFile(
+        JNIEnv *env,
+        jclass clazz,
+        jstring jaacPath) {
+
+    jlong jresult = 0 ;
+
+    const char* aacPath = env->GetStringUTFChars(jaacPath, NULL);
+    AacReader* pReader = new AacReader();
+    pReader->open_file(aacPath);
+
+    env->ReleaseStringUTFChars(jaacPath, aacPath);
+    *(AacReader **)&jresult = pReader;
+    return jresult;
+
+}
+
+extern "C"
+jint
+Java_com_lvhiei_androidtest_JniTools_nativeReadAAudioPacket(
+        JNIEnv *env,
+        jclass clazz,
+        jlong thzz,
+        jobject jbuffer) {
+
+    uint8_t* data = (uint8_t *) env->GetDirectBufferAddress(jbuffer);
+    int length = env->GetDirectBufferCapacity(jbuffer);
+    AacReader *pReader = (AacReader *) 0 ;
+    pReader = *(AacReader **)&thzz;
+
+    if(!pReader){
+        return 0;
+    }
+    return pReader->read_pacekt(data, length);
+}
+
+extern "C"
+jint
+Java_com_lvhiei_androidtest_JniTools_nativeCloseAudioFile(
+        JNIEnv *env,
+        jclass clazz,
+        jlong thzz) {
+
+    AacReader *pReader = (AacReader *) 0 ;
+    pReader = *(AacReader **)&thzz;
+
+    if(!pReader){
+        return 0;
+    }
+
+    pReader->close_file();
+    delete pReader;
 }

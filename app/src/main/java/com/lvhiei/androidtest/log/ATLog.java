@@ -54,7 +54,7 @@ public class ATLog {
         }
     }
 
-    public void i(String msg) {
+    private void i(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_INFO) {
             Log.i(m_tag, msg);
         }
@@ -64,7 +64,7 @@ public class ATLog {
         }
     }
 
-    public void d(String msg) {
+    private void d(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_DEBUG) {
             Log.d(m_tag, msg);
         }
@@ -75,7 +75,7 @@ public class ATLog {
         }
     }
 
-    public void w(String msg) {
+    private void w(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_WARN) {
             Log.w(m_tag, msg);
         }
@@ -85,7 +85,7 @@ public class ATLog {
         }
     }
 
-    public void e(String msg) {
+    private void e(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_ERROR) {
             Log.e(m_tag, msg);
         }
@@ -95,20 +95,20 @@ public class ATLog {
         }
     }
 
-    public void debug(String msg){
-        d(msg);
+    public void debug(String format, Object...args){
+        d(String.format(format, args));
     }
 
-    public void info(String msg){
-        i(msg);
+    public void info(String format, Object...args){
+        i(String.format(format, args));
     }
 
-    public void warn(String msg){
-        w(msg);
+    public void warn(String format, Object...args){
+        w(String.format(format, args));
     }
 
-    public void error(String msg){
-        e(msg);
+    public void error(String format, Object...args){
+        e(String.format(format, args));
     }
 
     public void flush(){

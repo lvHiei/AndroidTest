@@ -25,6 +25,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/audioTest/AudioFrameDecoder.cpp
              src/main/cpp/audioTest/AudioStreamDecoder.cpp
              src/main/cpp/audioTest/CAACHe2Lc.cpp
+             src/main/cpp/audioTest/AacReader.cpp
              src/main/cpp/util/TimeUtil.cpp
              src/main/cpp/format/VVAVFormat.cpp
              src/main/cpp/format/Mp4Muxer.cpp
@@ -54,13 +55,13 @@ find_library( # Sets the name of the path variable.
 
             # Specifies the name of the NDK library that
             # you want CMake to locate.
-            ffmpeg
+            ijkffmpeg
             )
 
 #增加so文件动态共享库，${ANDROID_ABI}表示so文件的ABI类型的路径
 add_library(ffmpeg-lib SHARED IMPORTED)
 set_target_properties(ffmpeg-lib  PROPERTIES
-IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/src/main/jniLibs/armeabi-v7a/libffmpeg.so)
+IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/src/main/jniLibs/armeabi-v7a/libijkffmpeg.so)
 
 SET(FIND_MSG "ffmpeg-lib is " ${ffmpeg-lib})
 Message(WARNING ${FIND_MSG})
