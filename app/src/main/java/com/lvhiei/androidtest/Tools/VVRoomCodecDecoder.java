@@ -65,11 +65,11 @@ public class VVRoomCodecDecoder {
 
     private IDecodeCallback mCallback = null;
 
-    VVRoomCodecDecoder(VideoConfig videoConfig, int micIndex){
+    public VVRoomCodecDecoder(VideoConfig videoConfig, int micIndex){
         this(videoConfig, micIndex, null);
     }
 
-    VVRoomCodecDecoder(VideoConfig videoConfig, int micIndex, IDecodeCallback callback){
+    public VVRoomCodecDecoder(VideoConfig videoConfig, int micIndex, IDecodeCallback callback){
         m_videoConfig = videoConfig;
         mMicIndex = micIndex;
         mCallback = callback;
