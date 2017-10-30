@@ -54,7 +54,7 @@ public class ATLog {
         }
     }
 
-    private void i(String msg) {
+    public void i(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_INFO) {
             Log.i(m_tag, msg);
         }
@@ -64,7 +64,7 @@ public class ATLog {
         }
     }
 
-    private void d(String msg) {
+    public void d(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_DEBUG) {
             Log.d(m_tag, msg);
         }
@@ -75,7 +75,7 @@ public class ATLog {
         }
     }
 
-    private void w(String msg) {
+    public void w(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_WARN) {
             Log.w(m_tag, msg);
         }
@@ -85,7 +85,7 @@ public class ATLog {
         }
     }
 
-    private void e(String msg) {
+    public void e(String msg) {
         if (m_iLogLevel <= LogLevel.LEVEL_ERROR) {
             Log.e(m_tag, msg);
         }

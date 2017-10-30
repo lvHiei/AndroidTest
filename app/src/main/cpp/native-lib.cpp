@@ -114,3 +114,27 @@ Java_com_lvhiei_androidtest_JniTools_nativeCloseAudioFile(
     pReader->close_file();
     delete pReader;
 }
+
+extern "C"
+void
+Java_com_lvhiei_androidtest_Tools_MemUtil_nativeMemCopy(
+        JNIEnv *env,
+        jclass clazz,
+        jobject jdstbuffer,
+        jint dstOffset,
+        jobject jsrcbuffer,
+        jint srcOffset,
+        jint length
+) {
+    unsigned char *dstBuffer = (unsigned char *) env->GetDirectBufferAddress(jdstbuffer);
+    if (NULL == dstBuffer) {
+        return;
+    }
+
+    unsigned char *srcBuffer = (unsigned char *) env->GetDirectBufferAddress(jsrcbuffer);
+    if (NULL == srcBuffer) {
+        return;
+    }
+
+    memcpy(dstBuffer + dstOffset, srcBuffer + srcOffset, length);
+}
