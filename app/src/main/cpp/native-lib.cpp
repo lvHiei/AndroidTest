@@ -4,6 +4,7 @@
 #include "audioTest/CAACHe2Lc.h"
 #include "audioTest/AudioStreamDecoder.h"
 #include "audioTest/AacReader.h"
+#include "MediaTest/MediaTest.h"
 
 extern "C"
 jstring
@@ -57,8 +58,6 @@ Java_com_lvhiei_androidtest_JniTools_nativeAudioSoftDecoder(
     env->ReleaseStringUTFChars(jaacPath, aacPath);
 }
 
-
-
 extern "C"
 jlong
 Java_com_lvhiei_androidtest_JniTools_nativeOpenAudioFile(
@@ -97,6 +96,8 @@ Java_com_lvhiei_androidtest_JniTools_nativeReadAAudioPacket(
     return pReader->read_pacekt(data, length);
 }
 
+
+
 extern "C"
 jint
 Java_com_lvhiei_androidtest_JniTools_nativeCloseAudioFile(
@@ -114,6 +115,7 @@ Java_com_lvhiei_androidtest_JniTools_nativeCloseAudioFile(
     pReader->close_file();
     delete pReader;
 }
+
 
 extern "C"
 void
@@ -137,4 +139,96 @@ Java_com_lvhiei_androidtest_Tools_MemUtil_nativeMemCopy(
     }
 
     memcpy(dstBuffer + dstOffset, srcBuffer + srcOffset, length);
+}
+
+
+extern "C"
+jlong
+Java_com_lvhiei_androidtest_JniTools_nativeOpenMediaFile(
+        JNIEnv *env,
+        jclass clazz,
+        jstring jmediaPath) {
+
+    jlong jresult = 0 ;
+
+    const char* mediaPath = env->GetStringUTFChars(jmediaPath, NULL);
+    MediaTest* pReader = new MediaTest();
+    pReader->open_file(mediaPath);
+
+    env->ReleaseStringUTFChars(jmediaPath, mediaPath);
+    *(MediaTest **)&jresult = pReader;
+    return jresult;
+
+}
+
+extern "C"
+jint
+Java_com_lvhiei_androidtest_JniTools_nativeReadMediaPacket(
+        JNIEnv *env,
+        jclass clazz,
+        jlong thzz,
+        jobject jbuffer) {
+
+    uint8_t* data = (uint8_t *) env->GetDirectBufferAddress(jbuffer);
+    int length = env->GetDirectBufferCapacity(jbuffer);
+    MediaTest *pReader = (MediaTest *) 0 ;
+    pReader = *(MediaTest **)&thzz;
+
+    if(!pReader){
+        return 0;
+    }
+    return pReader->read_pacekt(data, length);
+}
+
+extern "C"
+jint
+Java_com_lvhiei_androidtest_JniTools_nativeCloseMediaFile(
+        JNIEnv *env,
+        jclass clazz,
+        jlong thzz) {
+
+    MediaTest *pReader = (MediaTest *) 0 ;
+    pReader = *(MediaTest **)&thzz;
+
+    if(!pReader){
+        return 0;
+    }
+
+    int ret = pReader->close_file();
+    delete pReader;
+    return ret;
+}
+
+extern "C"
+jlong
+Java_com_lvhiei_androidtest_JniTools_nativeGetMediaTimestamp(
+        JNIEnv *env,
+        jclass clazz,
+        jlong thzz) {
+
+    MediaTest *pReader = (MediaTest *) 0 ;
+    pReader = *(MediaTest **)&thzz;
+
+    if(!pReader){
+        return 0;
+    }
+
+    return pReader->getTimestamp();
+}
+
+extern "C"
+jint
+Java_com_lvhiei_androidtest_JniTools_nativeGetMediaType(
+        JNIEnv *env,
+        jclass clazz,
+        jlong thzz) {
+
+    MediaTest *pReader = (MediaTest *) 0 ;
+    pReader = *(MediaTest **)&thzz;
+
+    if(!pReader){
+        return 0;
+    }
+
+    return pReader->getType();
 }

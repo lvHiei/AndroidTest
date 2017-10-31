@@ -1,5 +1,6 @@
 package com.lvhiei.androidtest.test;
 
+import com.lvhiei.androidtest.JniTools;
 import com.lvhiei.androidtest.Tools.VVRoomCodecDecoder;
 import com.lvhiei.androidtest.Tools.VideoConfig;
 import com.lvhiei.androidtest.test.BaseTest;
@@ -18,6 +19,7 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
     private ByteBuffer mBuffer = null;
     private int mBufferLen = 0;
     private long mTimestamp = 0;
+    private long mMediaInstance;
 
     @Override
     protected int localTest() {
@@ -32,7 +34,15 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
 
         mRoomDecoder = new VVRoomCodecDecoder(config, 0);
 
-        while (readNextPacket() > 0){
+        openFile();
+
+        while ((mBufferLen = readNextPacket()) > 0){
+            mTimestamp = getTimestamp();
+
+            if(getMediaType() != 1){
+                continue;
+            }
+
             if(!mRoomDecoder.isValid()){
                 if(isSps(mBuffer)){
                     mRoomDecoder.parseSPSPPS(mBuffer, mBufferLen);
@@ -47,6 +57,8 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
 
         mRoomDecoder.stop();
 
+        closeFile();
+
         return 0;
     }
 
@@ -59,10 +71,44 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
         }
     }
 
-    public int readNextPacket(){
+    private int openFile(){
+        mMediaInstance = JniTools.nativeOpenMediaFile(mFlvFile);
+        if(mMediaInstance == 0){
+            return -1;
+        }
+
         return 0;
     }
 
+    private int readNextPacket(){
+        if(mMediaInstance == 0){
+            return 0;
+        }
 
+        return JniTools.nativeReadMediaPacket(mMediaInstance, mBuffer);
+    }
 
+    private long getTimestamp(){
+        if(mMediaInstance == 0){
+            return 0;
+        }
+
+        return JniTools.nativeGetMediaTimestamp(mMediaInstance);
+    }
+
+    private int getMediaType(){
+        if(mMediaInstance == 0){
+            return 0;
+        }
+
+        return JniTools.nativeGetMediaType(mMediaInstance);
+    }
+
+    private void closeFile(){
+        if(mMediaInstance == 0){
+            return ;
+        }
+
+        JniTools.nativeCloseMediaFile(mMediaInstance);
+    }
 }

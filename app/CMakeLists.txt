@@ -26,6 +26,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/audioTest/AudioStreamDecoder.cpp
              src/main/cpp/audioTest/CAACHe2Lc.cpp
              src/main/cpp/audioTest/AacReader.cpp
+             src/main/cpp/MediaTest/MediaTest.cpp
              src/main/cpp/util/TimeUtil.cpp
              src/main/cpp/format/VVAVFormat.cpp
              src/main/cpp/format/Mp4Muxer.cpp
