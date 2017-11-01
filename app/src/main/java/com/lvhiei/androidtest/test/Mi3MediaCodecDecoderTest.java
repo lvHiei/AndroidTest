@@ -19,18 +19,19 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
     private ByteBuffer mBuffer = null;
     private int mBufferLen = 0;
     private long mTimestamp = 0;
+    private long mFirstTimestamp = -1;
     private long mMediaInstance;
 
     @Override
     protected int localTest() {
         VideoConfig config = new VideoConfig();
-        config.setWidth(480);
-        config.setHeight(352);
+        config.setWidth(352);
+        config.setHeight(640);
         config.setBitrate(400);
         config.setGop(1);
         config.setFramerate(15);
 
-        mBuffer = ByteBuffer.allocateDirect(480*360*3);
+        mBuffer = ByteBuffer.allocateDirect(352*640*3);
 
         mRoomDecoder = new VVRoomCodecDecoder(config, 0);
 
@@ -43,6 +44,10 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
                 continue;
             }
 
+            if(mFirstTimestamp == -1){
+                mFirstTimestamp = mTimestamp;
+            }
+
             if(!mRoomDecoder.isValid()){
                 if(isSps(mBuffer)){
                     mRoomDecoder.parseSPSPPS(mBuffer, mBufferLen);
@@ -52,7 +57,12 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
             if(mRoomDecoder.isValid() && !mRoomDecoder.isStarted()){
                 mRoomDecoder.start();
             }
-            while (!mRoomDecoder.push2decoder(mBuffer, mBufferLen, mTimestamp));
+
+            mBuffer.position(0);
+
+            if(mRoomDecoder.isStarted()){
+                while (!mRoomDecoder.push2decoder(mBuffer, mBufferLen, mTimestamp - mFirstTimestamp));
+            }
         }
 
         mRoomDecoder.stop();

@@ -57,6 +57,12 @@
                 android:text="音频4路mediaplayer播放"
                 />
 
+            <Button
+                android:id="@+id/btn_test_mi3h264Decoder"
+                style="@style/TestButton"
+                android:text="米三视频解码"
+                />
+
 
         </LinearLayout>
     </ScrollView>
