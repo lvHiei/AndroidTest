@@ -223,7 +223,7 @@ public class VVRoomCodecDecoder {
             // setup the vdecoder.
             // @see https://developer.android.com/reference/android/media/MediaCodec.html
             MediaFormat vformat = MediaFormat.createVideoFormat(VCODEC, m_videoConfig.getWidth(), m_videoConfig.getHeight());
-            vformat.setInteger(MediaFormat.KEY_COLOR_FORMAT, vcolor);
+            vformat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
             vformat.setByteBuffer("csd-0", mSPSBuffer);
             vformat.setByteBuffer("csd-1", mPPSBuffer);
             _log.i(String.format("vdecoder %s, color=%d,w:%d,h:%d,fmt;%s",
@@ -291,7 +291,7 @@ public class VVRoomCodecDecoder {
                 if (inBufferIndex >= 0) {
                     ByteBuffer bb = inBuffers[inBufferIndex];
                     bb.clear();
-                    _log.i(String.format("feed h264 to decoder %dB, pts=%d,iskey:%b", length, timestamp, isKeyFrame(data)));
+                    _log.i(String.format("feed h264 to decoder %dB, idx=%d,pts=%d,iskey:%b", length, inBufferIndex, timestamp, isKeyFrame(data)));
                     bb.put(data);
 //                long pts = new Date().getTime() * 1000 - presentationTimeUs;
                     vdecoder.queueInputBuffer(inBufferIndex, 0, length, timestamp * 1000, 0);
@@ -304,7 +304,7 @@ public class VVRoomCodecDecoder {
                 //_log.i(String.format("try to dequeue output vbuffer, ii=%d, oi=%d", inBufferIndex, outBufferIndex));
                 if (outBufferIndex >= 0) {
                     ByteBuffer bb = outBuffers[outBufferIndex];
-                    onDecodedVideoFrame(mMicIndex, bb, vebi);
+                    onDecodedVideoFrame(outBufferIndex, bb, vebi);
                     vdecoder.releaseOutputBuffer(outBufferIndex, false);
                 }
 
@@ -314,6 +314,8 @@ public class VVRoomCodecDecoder {
                         _log.i("decoder foramt changed : " + mDecodedMediaFormat);
                         resetVideoParam();
                         setPColor(mDecodedMediaFormat.getInteger(MediaFormat.KEY_COLOR_FORMAT));
+                    }else if(outBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED){
+                        _log.i("decoder INFO_OUTPUT_BUFFERS_CHANGED");
                     }
                     break;
                 }
@@ -360,8 +362,8 @@ public class VVRoomCodecDecoder {
         _log.i(String.format("nativeGetVideoParam mVideoWidth:%d,mVideoHeight:%d", mVideoWidth, mVideoHeight));
     }
 
-    private void onDecodedVideoFrame(int micIndex, ByteBuffer es, MediaCodec.BufferInfo bi) {
-        _log.i(String.format("onDecodedVideoFrame size:%d,pts:%d,fmt:%d(0x%x),mic:%d,flag:%d,offset:%d", bi.size, bi.presentationTimeUs/1000, vcolor, vcolor,micIndex, bi.flags, bi.offset));
+    private void onDecodedVideoFrame(int idx, ByteBuffer es, MediaCodec.BufferInfo bi) {
+        _log.i(String.format("onDecodedVideoFrame idx:%d,size:%d,pts:%d,fmt:%d(0x%x),mic:%d,flag:%d,offset:%d", idx, bi.size, bi.presentationTimeUs/1000, vcolor, vcolor,mMicIndex, bi.flags, bi.offset));
 
         if(null != mDecodedMediaFormat){
             if(null != mCallback){
