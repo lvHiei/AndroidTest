@@ -29,6 +29,7 @@ public class VVRoomCodecDecoder {
     private MediaCodec.BufferInfo vebi;
 
     private int TIMEOUT_IN_US = 10000;
+    private int TIMEOUT_OUT_US = 100000;
 
     // video camera settings.
     private int vcolor;
@@ -242,7 +243,7 @@ public class VVRoomCodecDecoder {
 
             _log.i("starting decoder...");
             vdecoder.start();
-
+            mFirstDecodeFrame = true;
             mbStarted = true;
             _log.i("start decoder success, micIdx:" + mMicIndex);
         }catch (IllegalStateException e){
@@ -302,26 +303,69 @@ public class VVRoomCodecDecoder {
                     ret =  true;
                 }
             }
+//
+//            for (;;) {
+//                int outBufferIndex = vdecoder.dequeueOutputBuffer(vebi, 0);
+//                //_log.i(String.format("try to dequeue output vbuffer, ii=%d, oi=%d", inBufferIndex, outBufferIndex));
+//                if (outBufferIndex >= 0) {
+//                    ByteBuffer bb = outBuffers[outBufferIndex];
+//                    onDecodedVideoFrame(outBufferIndex, bb, vebi);
+//                    vdecoder.releaseOutputBuffer(outBufferIndex, false);
+//                }
+//
+//                if (outBufferIndex < 0) {
+//                    if(outBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED){
+//                        mDecodedMediaFormat = vdecoder.getOutputFormat();
+//                        _log.i("decoder foramt changed : " + mDecodedMediaFormat);
+//                        resetVideoParam();
+//                        setPColor(mDecodedMediaFormat.getInteger(MediaFormat.KEY_COLOR_FORMAT));
+//                    }else if(outBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED){
+//                        _log.i("decoder INFO_OUTPUT_BUFFERS_CHANGED");
+//                    }
+//                    break;
+//                }
+//            }
 
-            for (;;) {
-                int outBufferIndex = vdecoder.dequeueOutputBuffer(vebi, 0);
-                //_log.i(String.format("try to dequeue output vbuffer, ii=%d, oi=%d", inBufferIndex, outBufferIndex));
-                if (outBufferIndex >= 0) {
-                    ByteBuffer bb = outBuffers[outBufferIndex];
-                    onDecodedVideoFrame(outBufferIndex, bb, vebi);
-                    vdecoder.releaseOutputBuffer(outBufferIndex, false);
-                }
+        }catch (IllegalStateException e){
+            e.printStackTrace();
+            mErrMsg = "push2decoder failed, got IllegalStateException";
+            _log.e(mErrMsg);
+            return false;
+        }catch (Throwable t){
+            mErrMsg = "push2decoder got unknown error";
+            _log.e("push2decoder got unknown error");
+            return false;
+        }
 
-                if (outBufferIndex < 0) {
-                    if(outBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED){
-                        mDecodedMediaFormat = vdecoder.getOutputFormat();
-                        _log.i("decoder foramt changed : " + mDecodedMediaFormat);
-                        resetVideoParam();
-                        setPColor(mDecodedMediaFormat.getInteger(MediaFormat.KEY_COLOR_FORMAT));
-                    }else if(outBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED){
-                        _log.i("decoder INFO_OUTPUT_BUFFERS_CHANGED");
-                    }
-                    break;
+        return ret;
+    }
+
+    private boolean mFirstDecodeFrame = true;
+
+    public boolean popFromDecoder(){
+        boolean ret = false;
+        try{
+            ByteBuffer[] outBuffers = vdecoder.getOutputBuffers();
+
+            long timeout = mFirstDecodeFrame ? 0 : TIMEOUT_OUT_US;
+            int outBufferIndex = vdecoder.dequeueOutputBuffer(vebi, timeout);
+            //_log.i(String.format("try to dequeue output vbuffer, ii=%d, oi=%d", inBufferIndex, outBufferIndex));
+            if (outBufferIndex >= 0) {
+                ByteBuffer bb = outBuffers[outBufferIndex];
+                onDecodedVideoFrame(outBufferIndex, bb, vebi);
+                vdecoder.releaseOutputBuffer(outBufferIndex, false);
+                ret = true;
+                mFirstDecodeFrame = false;
+            }
+
+            if (outBufferIndex < 0) {
+                if(outBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED){
+                    mDecodedMediaFormat = vdecoder.getOutputFormat();
+                    _log.i("decoder foramt changed : " + mDecodedMediaFormat);
+                    resetVideoParam();
+                    setPColor(mDecodedMediaFormat.getInteger(MediaFormat.KEY_COLOR_FORMAT));
+                }else if(outBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED){
+                    _log.i("decoder INFO_OUTPUT_BUFFERS_CHANGED");
                 }
             }
 

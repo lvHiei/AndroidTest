@@ -22,6 +22,20 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
     private long mFirstTimestamp = -1;
     private long mMediaInstance;
 
+    private boolean mWantStop = false;
+    private Thread mPopThread = null;
+    private Runnable mPopRunnable = new Runnable() {
+        @Override
+        public void run() {
+            while (!mWantStop){
+                if(mRoomDecoder != null && mRoomDecoder.isStarted()){
+                    mRoomDecoder.popFromDecoder();
+                }
+            }
+
+        }
+    };
+
     @Override
     protected int localTest() {
         VideoConfig config = new VideoConfig();
@@ -30,6 +44,8 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
         config.setBitrate(400);
         config.setGop(1);
         config.setFramerate(15);
+
+        mWantStop = false;
 
         mBuffer = ByteBuffer.allocateDirect(352*640*3);
 
@@ -58,11 +74,26 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
                 mRoomDecoder.start();
             }
 
+            if(mRoomDecoder.isStarted() && mPopThread == null){
+                mPopThread = new Thread(mPopRunnable);
+                mPopThread.start();
+            }
+
             mBuffer.position(0);
 
             if(mRoomDecoder.isStarted()){
                 while (!mRoomDecoder.push2decoder(mBuffer, mBufferLen, mTimestamp - mFirstTimestamp));
             }
+        }
+
+        mWantStop = true;
+
+        try {
+            if(null != mPopThread){
+                mPopThread.join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         mRoomDecoder.stop();
