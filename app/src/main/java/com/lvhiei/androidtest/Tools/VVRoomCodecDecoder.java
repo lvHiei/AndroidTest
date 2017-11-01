@@ -113,8 +113,8 @@ public class VVRoomCodecDecoder {
         mSPSLength = ppsPosition;
 
         buffer.position(0);
-        mSPSBuffer = ByteBuffer.allocateDirect(mSPSLength);
-        MemUtil.nativeMemCopy(mSPSBuffer, 0, buffer, 0, mSPSLength);
+//        mSPSBuffer = ByteBuffer.allocateDirect(mSPSLength);
+//        MemUtil.nativeMemCopy(mSPSBuffer, 0, buffer, 0, mSPSLength);
 
         int ppsEndPosition = parseNALUStart(buffer, ppsPosition + 4, length);
         if(ppsEndPosition < 0){
@@ -122,9 +122,13 @@ public class VVRoomCodecDecoder {
         }
 
         mPPSLength = ppsEndPosition - ppsPosition;
-        buffer.position(ppsPosition);
-        mPPSBuffer = ByteBuffer.allocateDirect(mPPSLength);
-        MemUtil.nativeMemCopy(mPPSBuffer, 0, buffer, mSPSLength, mPPSLength);
+//        buffer.position(ppsPosition);
+//        mPPSBuffer = ByteBuffer.allocateDirect(mPPSLength);
+//        MemUtil.nativeMemCopy(mPPSBuffer, 0, buffer, mSPSLength, mPPSLength);
+
+        mSPSBuffer = ByteBuffer.allocateDirect(mSPSLength + mPPSLength);
+        MemUtil.nativeMemCopy(mSPSBuffer, 0, buffer, 0, mSPSLength + mPPSLength);
+        mPPSBuffer = mSPSBuffer;
 
 //        resetVideoParam();
 
@@ -225,7 +229,7 @@ public class VVRoomCodecDecoder {
             MediaFormat vformat = MediaFormat.createVideoFormat(VCODEC, m_videoConfig.getWidth(), m_videoConfig.getHeight());
             vformat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
             vformat.setByteBuffer("csd-0", mSPSBuffer);
-            vformat.setByteBuffer("csd-1", mPPSBuffer);
+//            vformat.setByteBuffer("csd-1", mPPSBuffer);
             _log.i(String.format("vdecoder %s, color=%d,w:%d,h:%d,fmt;%s",
                     vmci.getName(), vcolor, m_videoConfig.getWidth(), m_videoConfig.getHeight(), vformat.toString()));
             // the following error can be ignored:
