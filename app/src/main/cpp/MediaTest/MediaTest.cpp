@@ -126,24 +126,24 @@ int MediaTest::read_pacekt(uint8_t *data, int length)
             packet.data[1] = 0x0;
             packet.data[2] = 0x0;
             packet.data[3] = 0x1;
-            if((packet.data[2] == 0x01 && packet.data[3] == 0x65) || (packet.data[3] == 0x01 && packet.data[4] == 0x65)){
-                size_t spsSize = m_pFormatContext->streams[0]->codec->extradata_size + 20;
-                uint8_t *spsData = (uint8_t *) malloc(sizeof(uint8_t) * spsSize);
-                size_t nalu_size;
-                convert_sps_pps(m_pFormatContext->streams[0]->codec->extradata, m_pFormatContext->streams[0]->codec->extradata_size,
-                    spsData, spsSize, &spsSize, &nalu_size);
-
-                for(int i = 0; i < spsSize; i+=4) {
-                    LOGE("csd-0[%d]: %02x%02x%02x%02x\n", (int)spsSize, (int)spsData[i+0], (int)spsData[i+1], (int)spsData[i+2], (int)spsData[i+3]);
-                }
-
-                memcpy(data, spsData, spsSize);
-                memcpy(data + spsSize, packet.data, packet.size);
-
-                free(spsData);
-
-                return packet.size + spsSize;
-            }
+//            if((packet.data[2] == 0x01 && packet.data[3] == 0x65) || (packet.data[3] == 0x01 && packet.data[4] == 0x65)){
+//                size_t spsSize = m_pFormatContext->streams[0]->codec->extradata_size + 20;
+//                uint8_t *spsData = (uint8_t *) malloc(sizeof(uint8_t) * spsSize);
+//                size_t nalu_size;
+//                convert_sps_pps(m_pFormatContext->streams[0]->codec->extradata, m_pFormatContext->streams[0]->codec->extradata_size,
+//                    spsData, spsSize, &spsSize, &nalu_size);
+//
+//                for(int i = 0; i < spsSize; i+=4) {
+//                    LOGE("csd-0[%d]: %02x%02x%02x%02x\n", (int)spsSize, (int)spsData[i+0], (int)spsData[i+1], (int)spsData[i+2], (int)spsData[i+3]);
+//                }
+//
+//                memcpy(data, spsData, spsSize);
+//                memcpy(data + spsSize, packet.data, packet.size);
+//
+//                free(spsData);
+//
+//                return packet.size + spsSize;
+//            }
         }
 
         memcpy(data, packet.data, packet.size);

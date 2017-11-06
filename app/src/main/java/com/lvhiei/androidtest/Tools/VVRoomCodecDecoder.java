@@ -28,7 +28,7 @@ public class VVRoomCodecDecoder {
     private MediaCodecInfo vmci;
     private MediaCodec.BufferInfo vebi;
 
-    private int TIMEOUT_IN_US = 10000;
+    private int TIMEOUT_IN_US = 100000;
     private int TIMEOUT_OUT_US = 100000;
 
     // video camera settings.
@@ -91,12 +91,14 @@ public class VVRoomCodecDecoder {
     public void setSPSBuffer(ByteBuffer buffer, int length){
         mSPSBuffer = ByteBuffer.allocateDirect(length);
         mSPSBuffer.put(buffer);
+        mSPSBuffer.position(0);
 //        resetVideoParam();
     }
 
     public void setPPSBuffer(ByteBuffer buffer, int length){
         mPPSBuffer = ByteBuffer.allocateDirect(length);
         mPPSBuffer.put(buffer);
+        mPPSBuffer.position(0);
     }
 
 
@@ -286,9 +288,15 @@ public class VVRoomCodecDecoder {
 
         boolean ret = false;
         try{
+
+            if(!mFirstDecodeFrame){
+                Thread.sleep(40);
+            }
+
+
             // feed the vdecoder with yuv frame, got the encoded 264 es stream.
             ByteBuffer[] inBuffers = vdecoder.getInputBuffers();
-            ByteBuffer[] outBuffers = vdecoder.getOutputBuffers();
+//            ByteBuffer[] outBuffers = vdecoder.getOutputBuffers();
 
             if (true) {
                 int inBufferIndex = vdecoder.dequeueInputBuffer(TIMEOUT_IN_US);
@@ -296,8 +304,13 @@ public class VVRoomCodecDecoder {
                 if (inBufferIndex >= 0) {
                     ByteBuffer bb = inBuffers[inBufferIndex];
                     bb.clear();
-                    _log.i(String.format("feed h264 to decoder %dB, idx=%d,pts=%d,iskey:%b", length, inBufferIndex, timestamp, isKeyFrame(data)));
-                    bb.put(data);
+                    _log.i(String.format("feed h264 to decoder %dB, idx=%d,pts=%d,iskey:%b,data(0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x)",
+                            length, inBufferIndex, timestamp, isKeyFrame(data),
+                            data.get(0), data.get(1),data.get(2),data.get(3),data.get(4),
+                            data.get(5),data.get(6),data.get(7),data.get(8),data.get(9)));
+//                    bb.put(data);
+//                    bb.position(0);
+                    MemUtil.nativeMemCopy(bb, 0, data, 0, length);
 //                long pts = new Date().getTime() * 1000 - presentationTimeUs;
                     vdecoder.queueInputBuffer(inBufferIndex, 0, length, timestamp * 1000, 0);
                     ret =  true;
@@ -366,6 +379,8 @@ public class VVRoomCodecDecoder {
                     setPColor(mDecodedMediaFormat.getInteger(MediaFormat.KEY_COLOR_FORMAT));
                 }else if(outBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED){
                     _log.i("decoder INFO_OUTPUT_BUFFERS_CHANGED");
+                }else{
+//                    Thread.sleep(1000);
                 }
             }
 
@@ -417,6 +432,12 @@ public class VVRoomCodecDecoder {
             if(null != mCallback){
                 mCallback.onDecodedFrame(mMicIndex, es, bi, mVideoWidth, mVideoHeight, mDecodedMediaFormat, pcolor);
             }
+        }
+
+        try {
+            Thread.sleep(60);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

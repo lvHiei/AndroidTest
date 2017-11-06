@@ -27,14 +27,41 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
     private Runnable mPopRunnable = new Runnable() {
         @Override
         public void run() {
-            while (!mWantStop){
-                if(mRoomDecoder != null && mRoomDecoder.isStarted()){
-                    mRoomDecoder.popFromDecoder();
+
+            while ((mBufferLen = readNextPacket()) > 0){
+                mTimestamp = getTimestamp();
+
+                if(getMediaType() != 1){
+                    continue;
+                }
+
+                if(mFirstTimestamp == -1){
+                    mFirstTimestamp = mTimestamp;
+                }
+
+                if(!mRoomDecoder.isValid()){
+                    if(isSps(mBuffer)){
+                        mRoomDecoder.parseSPSPPS(mBuffer, mBufferLen);
+                    }
+                }
+
+                if(mRoomDecoder.isValid() && !mRoomDecoder.isStarted()){
+                    mRoomDecoder.start();
+                }
+
+
+                mBuffer.position(0);
+
+                if(mRoomDecoder.isStarted()){
+                    while (!mRoomDecoder.push2decoder(mBuffer, mBufferLen, mTimestamp - mFirstTimestamp));
                 }
             }
 
+            mWantStop = true;
         }
     };
+
+
 
     @Override
     protected int localTest() {
@@ -51,49 +78,29 @@ public class Mi3MediaCodecDecoderTest extends BaseTest {
 
         mRoomDecoder = new VVRoomCodecDecoder(config, 0);
 
+        byte[] sps_pps = {0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x40, 0x32, (byte) 0x96, 0x54, 0x0b, 0x02, (byte) 0x8c, (byte) 0x80, 0x00, 0x00, 0x00, 0x01, 0x68, (byte) 0xce, 0x3c, (byte) 0x80};
+
+        ByteBuffer spsBuffer = ByteBuffer.allocateDirect(sps_pps.length);
+        spsBuffer.put(sps_pps);
+        spsBuffer.position(0);
+        mRoomDecoder.setSPSBuffer(spsBuffer, sps_pps.length);
+        spsBuffer.position(0);
+        mRoomDecoder.setPPSBuffer(spsBuffer, sps_pps.length);
+
+        mRoomDecoder.start();
+
         openFile();
 
-        while ((mBufferLen = readNextPacket()) > 0){
-            mTimestamp = getTimestamp();
 
-            if(getMediaType() != 1){
-                continue;
-            }
-
-            if(mFirstTimestamp == -1){
-                mFirstTimestamp = mTimestamp;
-            }
-
-            if(!mRoomDecoder.isValid()){
-                if(isSps(mBuffer)){
-                    mRoomDecoder.parseSPSPPS(mBuffer, mBufferLen);
-                }
-            }
-
-            if(mRoomDecoder.isValid() && !mRoomDecoder.isStarted()){
-                mRoomDecoder.start();
-            }
-
-            if(mRoomDecoder.isStarted() && mPopThread == null){
-                mPopThread = new Thread(mPopRunnable);
-                mPopThread.start();
-            }
-
-            mBuffer.position(0);
-
-            if(mRoomDecoder.isStarted()){
-                while (!mRoomDecoder.push2decoder(mBuffer, mBufferLen, mTimestamp - mFirstTimestamp));
-            }
+        if(mRoomDecoder.isStarted() && mPopThread == null){
+            mPopThread = new Thread(mPopRunnable);
+            mPopThread.start();
         }
 
-        mWantStop = true;
-
-        try {
-            if(null != mPopThread){
-                mPopThread.join();
+        while (!mWantStop){
+            if(mRoomDecoder != null && mRoomDecoder.isStarted()){
+                mRoomDecoder.popFromDecoder();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         mRoomDecoder.stop();
