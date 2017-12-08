@@ -24,7 +24,7 @@ public class FileLog {
 
     private boolean m_bInited = false;
 
-    private String m_strFilePath = Environment.getExternalStorageDirectory() + "/vvlive/log/";
+    private String m_strFilePath = Environment.getExternalStorageDirectory() + "/vvlive/log";
 
     public void init(String path) {
         m_strFilePath = path;

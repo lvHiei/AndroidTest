@@ -288,15 +288,15 @@ public class VVRoomCodecDecoder {
 
         boolean ret = false;
         try{
-
-            if(!mFirstDecodeFrame){
-                Thread.sleep(40);
-            }
+//
+//            if(!mFirstDecodeFrame){
+//                Thread.sleep(40);
+//            }
 
 
             // feed the vdecoder with yuv frame, got the encoded 264 es stream.
             ByteBuffer[] inBuffers = vdecoder.getInputBuffers();
-//            ByteBuffer[] outBuffers = vdecoder.getOutputBuffers();
+            ByteBuffer[] outBuffers = vdecoder.getOutputBuffers();
 
             if (true) {
                 int inBufferIndex = vdecoder.dequeueInputBuffer(TIMEOUT_IN_US);
@@ -316,28 +316,28 @@ public class VVRoomCodecDecoder {
                     ret =  true;
                 }
             }
-//
-//            for (;;) {
-//                int outBufferIndex = vdecoder.dequeueOutputBuffer(vebi, 0);
-//                //_log.i(String.format("try to dequeue output vbuffer, ii=%d, oi=%d", inBufferIndex, outBufferIndex));
-//                if (outBufferIndex >= 0) {
-//                    ByteBuffer bb = outBuffers[outBufferIndex];
-//                    onDecodedVideoFrame(outBufferIndex, bb, vebi);
-//                    vdecoder.releaseOutputBuffer(outBufferIndex, false);
-//                }
-//
-//                if (outBufferIndex < 0) {
-//                    if(outBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED){
-//                        mDecodedMediaFormat = vdecoder.getOutputFormat();
-//                        _log.i("decoder foramt changed : " + mDecodedMediaFormat);
-//                        resetVideoParam();
-//                        setPColor(mDecodedMediaFormat.getInteger(MediaFormat.KEY_COLOR_FORMAT));
-//                    }else if(outBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED){
-//                        _log.i("decoder INFO_OUTPUT_BUFFERS_CHANGED");
-//                    }
-//                    break;
-//                }
-//            }
+
+            for (;;) {
+                int outBufferIndex = vdecoder.dequeueOutputBuffer(vebi, 0);
+                //_log.i(String.format("try to dequeue output vbuffer, ii=%d, oi=%d", inBufferIndex, outBufferIndex));
+                if (outBufferIndex >= 0) {
+                    ByteBuffer bb = outBuffers[outBufferIndex];
+                    onDecodedVideoFrame(outBufferIndex, bb, vebi);
+                    vdecoder.releaseOutputBuffer(outBufferIndex, false);
+                }
+
+                if (outBufferIndex < 0) {
+                    if(outBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED){
+                        mDecodedMediaFormat = vdecoder.getOutputFormat();
+                        _log.i("decoder foramt changed : " + mDecodedMediaFormat);
+                        resetVideoParam();
+                        setPColor(mDecodedMediaFormat.getInteger(MediaFormat.KEY_COLOR_FORMAT));
+                    }else if(outBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED){
+                        _log.i("decoder INFO_OUTPUT_BUFFERS_CHANGED");
+                    }
+                    break;
+                }
+            }
 
         }catch (IllegalStateException e){
             e.printStackTrace();

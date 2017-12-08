@@ -15,6 +15,7 @@ import com.lvhiei.androidtest.test.BaseTest;
 import com.lvhiei.androidtest.test.ITest;
 import com.lvhiei.androidtest.test.MediaPlayer4AudioTest;
 import com.lvhiei.androidtest.test.Mi3MediaCodecDecoderTest;
+import com.lvhiei.androidtest.test.YunceMediaCodecDecoderTest;
 
 public class MainActivity extends AppCompatActivity {
     private ATLog logger = new ATLog(this.getClass().getName());
@@ -75,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
                     mTester = new Mi3MediaCodecDecoderTest();
                 }
                     break;
+                case R.id.btn_test_yunceh264Decoder:
+                {
+                    mTester = new YunceMediaCodecDecoderTest();
+                }
+                    break;
                 default:
                 {
                     mTester = new BaseTest();
@@ -105,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_test_audioHardDecode).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audio4MediaPlayer).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_mi3h264Decoder).setOnClickListener(mOnClickListener);
+        findViewById(R.id.btn_test_yunceh264Decoder).setOnClickListener(mOnClickListener);
     }
 
 }
