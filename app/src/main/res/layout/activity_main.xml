@@ -69,6 +69,12 @@
                 android:text="云测视频解码"
                 />
 
+            <Button
+                android:id="@+id/btn_test_audioRecorder"
+                style="@style/TestButton"
+                android:text="音频录音"
+                />
+
 
         </LinearLayout>
     </ScrollView>

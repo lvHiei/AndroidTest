@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.lvhiei.androidtest.log.ATLog;
 import com.lvhiei.androidtest.test.AACHe2LcTest;
 import com.lvhiei.androidtest.test.AudioHardDecoderTest;
+import com.lvhiei.androidtest.test.AudioRecorderTest;
 import com.lvhiei.androidtest.test.AudioSoftDecoder4Test;
 import com.lvhiei.androidtest.test.AudioSoftDecoderTest;
 import com.lvhiei.androidtest.test.BaseTest;
@@ -81,6 +82,11 @@ public class MainActivity extends AppCompatActivity {
                     mTester = new YunceMediaCodecDecoderTest();
                 }
                     break;
+                case R.id.btn_test_audioRecorder:
+                {
+                    mTester = new AudioRecorderTest();
+                }
+                    break;
                 default:
                 {
                     mTester = new BaseTest();
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_test_audio4MediaPlayer).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_mi3h264Decoder).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_yunceh264Decoder).setOnClickListener(mOnClickListener);
+        findViewById(R.id.btn_test_audioRecorder).setOnClickListener(mOnClickListener);
     }
 
 }
