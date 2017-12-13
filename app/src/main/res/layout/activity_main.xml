@@ -7,20 +7,38 @@
     tools:context="com.lvhiei.androidtest.MainActivity">
 
 
-    <TextView
-        android:id="@+id/tv_test_status"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="Test Status"
-        android:textColor="@color/red"/>
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_test_status"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:text="Test Status"
+            android:textColor="@color/red"/>
+
+        <Button
+            android:id="@+id/btn_test_func"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:textAlignment="center"
+            android:gravity="right"
+            android:textAllCaps="false"
+            android:text="func">
+        </Button>
+    </LinearLayout>
+
 
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"

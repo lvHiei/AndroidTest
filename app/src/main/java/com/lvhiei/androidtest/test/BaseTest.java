@@ -131,6 +131,11 @@ public class BaseTest implements ITest {
         return mIsTesting;
     }
 
+    @Override
+    public void func() {
+        logger.i("func");
+    }
+
     protected int localTest(){
         logger.info("local testing");
         return 0;

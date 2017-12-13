@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(null != mTester && mTester.isTesting()){
+                if(v.getId() == R.id.btn_test_func) {
+                    mTester.func();
+                }
                 return;
             }
 
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         mTvTestStatus = (TextView) findViewById(R.id.tv_test_status);
+        findViewById(R.id.btn_test_func).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_aacHe2lc).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioSoftDecode).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioSoftMutiDecode).setOnClickListener(mOnClickListener);

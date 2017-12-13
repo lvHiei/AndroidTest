@@ -14,6 +14,19 @@ import java.io.IOException;
 public class AudioRecorderTest extends BaseTest {
     private AudioRecorder mRecorder;
 
+    private boolean mbPaused = false;
+
+    @Override
+    public void func() {
+        if(mbPaused){
+            mRecorder.pause(false);
+        }else{
+            mRecorder.pause(true);
+        }
+
+        mbPaused = !mbPaused;
+    }
+
     @Override
     protected int localTest() {
         mRecorder = new AudioRecorder();
@@ -31,8 +44,13 @@ public class AudioRecorderTest extends BaseTest {
             outputStream = new FileOutputStream("/sdcard/android_test/test.pcm");
             byte[] buffer = new byte[mRecorder.getBufferSize()];
             int i = 0;
+            int length = 0;
             while (i++ < 200){
-                mRecorder.read(buffer);
+                length = mRecorder.read(buffer);
+                if(length <= 0){
+                    --i;
+                    continue;
+                }
                 outputStream.write(buffer);
             }
         } catch (FileNotFoundException e) {

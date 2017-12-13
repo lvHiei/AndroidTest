@@ -8,4 +8,5 @@ package com.lvhiei.androidtest.test;
 public interface ITest {
     void doTest();
     boolean isTesting();
+    void func();
 }
