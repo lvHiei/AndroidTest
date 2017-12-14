@@ -18,7 +18,7 @@ public class AudioRecorder {
     private static final int BUFFER_STRIDE = 4096;
 
     private static int AUDIO_SAMLPE_RATE = 44100;
-    private static int AUDIO_CHANNEL = AudioFormat.CHANNEL_IN_STEREO;
+    private static int AUDIO_CHANNEL = AudioFormat.CHANNEL_IN_MONO;
     private static int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static int MIN_BUFFER_SIZE = 4096;
 
