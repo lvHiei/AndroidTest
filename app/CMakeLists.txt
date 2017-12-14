@@ -32,6 +32,8 @@ add_library( # Sets the name of the library.
              src/main/cpp/format/Mp4Muxer.cpp
              src/main/cpp/codec/VVAVEncoder.cpp
              src/main/cpp/codec/VVAVDecoder.cpp
+             src/main/cpp/jniObject/JniHelper.cpp
+             src/main/cpp/jniObject/JNIAudioRecorder.cpp
              src/main/cpp/native-lib.cpp )
 
 # Searches for a specified prebuilt library and stores the path as a

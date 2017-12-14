@@ -23,5 +23,11 @@
 //#define LOGF(...)
 
 
+#define CHECK_JNI_EXCEPTION(env, func) { \
+    jthrowable ta = env->ExceptionOccurred();   \
+    if(ta != 0){    \
+        LOGE("JniCall got exception, func:%s, env:%p", func, env);  \
+    }   \
+}
 
 #endif //MVBOX_NEW_LOGUTIL_H

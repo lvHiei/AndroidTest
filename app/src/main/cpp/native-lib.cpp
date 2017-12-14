@@ -7,6 +7,7 @@
 #include "util/logUtil.h"
 #include "util/TimeUtil.h"
 #include "MediaTest/MediaTest.h"
+#include "jniObject/JniHelper.h"
 
 JavaVM* sp_jvm = NULL;
 
@@ -15,6 +16,8 @@ static pthread_once_t g_key_once = PTHREAD_ONCE_INIT;
 
 jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     sp_jvm = vm;
+    JniHelper::ms_pJVM = vm;
+    JniHelper::getInstance();
     JNIEnv *env;
     vm->GetEnv((void **) &env, JNI_VERSION_1_4);
 

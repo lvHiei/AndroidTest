@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
  */
 
 
-public class AudioRecorder {
+public class AudioRecorder implements Runnable{
     private ATLog log = new ATLog(this.getClass().getName());
     private static final int BUFFER_STRIDE = 4096;
 
@@ -28,8 +28,16 @@ public class AudioRecorder {
     private int mChannels;
     private int mFormat;
 
+    private Thread mReadThread = null;
+    private boolean mbWantStop = false;
+    ByteBuffer mReadBuffer = null;
+
     public AudioRecorder(){
         this(AUDIO_SAMLPE_RATE, AUDIO_CHANNEL, AUDIO_FORMAT);
+    }
+
+    public AudioRecorder(int samplerate, int channel){
+        this(samplerate, channel, AUDIO_FORMAT);
     }
 
     public AudioRecorder(int samplerate, int channel, int format){
@@ -78,6 +86,10 @@ public class AudioRecorder {
             log.e("start AudioRecord got unknown error");
             return false;
         }
+
+        mbWantStop = false;
+        mReadThread = new Thread(this);
+        mReadThread.start();
 
         return true;
     }
@@ -153,6 +165,17 @@ public class AudioRecorder {
             log.e("stop AudioRecord got unknown error");
             return false;
         }
+
+        if(null != mReadThread){
+            mbWantStop = true;
+            try {
+                mReadThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            mReadThread = null;
+        }
+
         return true;
     }
 
@@ -160,5 +183,16 @@ public class AudioRecorder {
     public boolean release(){
         mRecord.release();
         return true;
+    }
+
+    @Override
+    public void run() {
+        mReadBuffer = ByteBuffer.allocateDirect(mBufferSize);
+
+        while (!mbWantStop){
+            read(mReadBuffer, mBufferSize);
+        }
+
+        mReadBuffer = null;
     }
 }
