@@ -4,7 +4,22 @@
 #include "audioTest/CAACHe2Lc.h"
 #include "audioTest/AudioStreamDecoder.h"
 #include "audioTest/AacReader.h"
+#include "util/logUtil.h"
+#include "util/TimeUtil.h"
 #include "MediaTest/MediaTest.h"
+
+JavaVM* sp_jvm = NULL;
+
+static pthread_key_t g_thread_key;
+static pthread_once_t g_key_once = PTHREAD_ONCE_INIT;
+
+jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+    sp_jvm = vm;
+    JNIEnv *env;
+    vm->GetEnv((void **) &env, JNI_VERSION_1_4);
+
+    return JNI_VERSION_1_4;
+}
 
 extern "C"
 jstring
@@ -13,6 +28,128 @@ Java_com_lvhiei_androidtest_MainActivity_stringFromJNI(
         jobject /* this */) {
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
+}
+
+static void make_thread_key()
+{
+    pthread_key_create(&g_thread_key, NULL);
+}
+
+static void thread_test(){
+    JNIEnv* env;
+    if (sp_jvm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
+        LOGE("Attach thread, getenv is NULL");
+    }else{
+        LOGE("JNIEnvTest thread_test: env:%p", env);
+    }
+}
+
+
+jint SDL_JNI_SetupThreadEnv(JNIEnv **p_env)
+{
+    JavaVM *jvm = sp_jvm;
+    if (!jvm) {
+        LOGE("SDL_JNI_GetJvm: AttachCurrentThread: NULL jvm");
+        return -1;
+    }
+
+    pthread_once(&g_key_once, make_thread_key);
+
+    JNIEnv *env = (JNIEnv*) pthread_getspecific(g_thread_key);
+    if (env) {
+        *p_env = env;
+        LOGI("env pthread_getspecific");
+        return 0;
+    }
+
+    if (jvm->AttachCurrentThread(&env, NULL) == JNI_OK) {
+        pthread_setspecific(g_thread_key, env);
+        *p_env = env;
+        return 0;
+    }
+
+    return -1;
+}
+
+
+static void* thread1(void *data){
+
+    pthread_once(&g_key_once, make_thread_key);
+    JNIEnv *env;
+//    bool isAttachedENV = false;
+//    if (sp_jvm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
+//        if (sp_jvm->AttachCurrentThread(&env, NULL) < 0) {
+//            LOGE("Attach current thread to JVM error!");
+//        }
+//        isAttachedENV = true;
+//    }
+
+    SDL_JNI_SetupThreadEnv(&env);
+
+    LOGI("thread1 env is %p,key:%d", env, g_thread_key);
+
+    TimeUtil::sleep(20);
+
+    SDL_JNI_SetupThreadEnv(&env);
+
+    LOGI("thread1 env is %p,key:%d", env, g_thread_key);
+//    if (isAttachedENV) {
+        sp_jvm->DetachCurrentThread();
+//    }
+
+    return NULL;
+}
+
+static void* thread2(void *data){
+    pthread_once(&g_key_once, make_thread_key);
+    JNIEnv *env;
+//    bool isAttachedENV = false;
+//    TimeUtil::sleep(10);
+//    if (sp_jvm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
+//        if (sp_jvm->AttachCurrentThread(&env, NULL) < 0) {
+//            LOGE("Attach current thread to JVM error!");
+//        }
+//        isAttachedENV = true;
+//    }
+
+    TimeUtil::sleep(10);
+
+    SDL_JNI_SetupThreadEnv(&env);
+
+    LOGI("thread2 env is %p,key:%d", env, g_thread_key);
+
+    TimeUtil::sleep(20);
+
+    SDL_JNI_SetupThreadEnv(&env);
+
+    LOGI("thread2 env is %p,key:%d", env, g_thread_key);
+
+//    if (isAttachedENV) {
+        sp_jvm->DetachCurrentThread();
+//    }
+
+    return NULL;
+}
+
+static void* thread3(void *data){
+    pthread_once(&g_key_once, make_thread_key);
+    JNIEnv *env;
+    bool isAttachedENV = false;
+
+    if (sp_jvm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
+        if (sp_jvm->AttachCurrentThread(&env, NULL) < 0) {
+            LOGE("Attach current thread to JVM error!");
+        }
+        isAttachedENV = true;
+    }
+
+    LOGE("JNIEnvTest thread3: env:%p", env);
+
+    thread_test();
+
+    sp_jvm->DetachCurrentThread();
+
+    return NULL;
 }
 
 
@@ -231,4 +368,25 @@ Java_com_lvhiei_androidtest_JniTools_nativeGetMediaType(
     }
 
     return pReader->getType();
+}
+
+extern "C"
+jint
+Java_com_lvhiei_androidtest_JniTools_nativeJniEnvTest(
+        JNIEnv *env,
+        jclass clazz) {
+
+//    pthread_t t1;
+//    pthread_t t2;
+//
+//    pthread_create(&t1, NULL, thread1, NULL);
+//    pthread_create(&t2, NULL, thread2, NULL);
+//
+//    pthread_join(t1, NULL);
+//    pthread_join(t2, NULL);
+
+    pthread_t t3;
+    pthread_create(&t3, NULL, thread3, NULL);
+    pthread_join(t3, NULL);
+    return 0;
 }

@@ -93,6 +93,12 @@
                 android:text="音频录音"
                 />
 
+            <Button
+                android:id="@+id/btn_test_jniEnv"
+                style="@style/TestButton"
+                android:text="JniEnv"
+                />
+
 
         </LinearLayout>
     </ScrollView>

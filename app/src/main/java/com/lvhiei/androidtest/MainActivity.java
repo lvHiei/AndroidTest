@@ -14,6 +14,7 @@ import com.lvhiei.androidtest.test.AudioSoftDecoder4Test;
 import com.lvhiei.androidtest.test.AudioSoftDecoderTest;
 import com.lvhiei.androidtest.test.BaseTest;
 import com.lvhiei.androidtest.test.ITest;
+import com.lvhiei.androidtest.test.JniEnvTest;
 import com.lvhiei.androidtest.test.MediaPlayer4AudioTest;
 import com.lvhiei.androidtest.test.Mi3MediaCodecDecoderTest;
 import com.lvhiei.androidtest.test.YunceMediaCodecDecoderTest;
@@ -90,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
                     mTester = new AudioRecorderTest();
                 }
                     break;
+                case R.id.btn_test_jniEnv:
+                {
+                    mTester = new JniEnvTest();
+                }
+                    break;
                 default:
                 {
                     mTester = new BaseTest();
@@ -123,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_test_mi3h264Decoder).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_yunceh264Decoder).setOnClickListener(mOnClickListener);
         findViewById(R.id.btn_test_audioRecorder).setOnClickListener(mOnClickListener);
+        findViewById(R.id.btn_test_jniEnv).setOnClickListener(mOnClickListener);
     }
 
 }

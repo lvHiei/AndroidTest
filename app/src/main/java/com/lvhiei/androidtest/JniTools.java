@@ -30,4 +30,7 @@ public class JniTools {
     public static native void nativeCloseMediaFile(long thzz);
     public static native long nativeGetMediaTimestamp(long thzz);
     public static native int nativeGetMediaType(long thzz);
+
+
+    public static native int nativeJniEnvTest();
 }
