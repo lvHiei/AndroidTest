@@ -48,7 +48,7 @@ jobject JniHelper::NewGlobalRef(JNIEnv *env, jobject obj) {
 }
 
 void JniHelper::DeleteGlobalRef(JNIEnv *env, jobject obj) {
-    env->DeleteLocalRef(obj);
+    env->DeleteGlobalRef(obj);
 }
 
 JniHelper::JniHelper()

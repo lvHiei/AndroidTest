@@ -8,6 +8,7 @@
 #include "util/TimeUtil.h"
 #include "MediaTest/MediaTest.h"
 #include "jniObject/JniHelper.h"
+#include "jniObject/JNIAudioRecorder.h"
 
 JavaVM* sp_jvm = NULL;
 
@@ -392,4 +393,74 @@ Java_com_lvhiei_androidtest_JniTools_nativeJniEnvTest(
     pthread_create(&t3, NULL, thread3, NULL);
     pthread_join(t3, NULL);
     return 0;
+}
+
+
+extern "C"
+jint
+Java_com_lvhiei_androidtest_JniTools_nativeJniRecorderTest(
+        JNIEnv *env,
+        jclass clazz) {
+    JNIAudioRecorder* pRecord = new JNIAudioRecorder(sp_jvm);
+    if(!pRecord->prepareRecording()){
+        LOGE("prepare failed");
+        return -1;
+    }
+
+    if(!pRecord->startRecording()){
+        LOGE("startRecording failed");
+        return -1;
+    }
+
+    uint32_t begin = TimeUtil::GetTickCount();
+    uint32_t now = TimeUtil::GetTickCount();
+
+    bool paused = false;
+
+    while(now - begin < 10000){
+        TimeUtil::sleep(100);
+        now = TimeUtil::GetTickCount();
+
+        if(now - begin > 3000 && now - begin < 5000 && !paused){
+            LOGI("JniRecord : paused");
+            pRecord->pauseRecording(true);
+            paused = true;
+        }
+
+        if(now - begin > 5000 && paused){
+            LOGI("JniRecord : resumed");
+            paused = false;
+            pRecord->pauseRecording(false);
+        }
+    }
+
+    if(!pRecord->stopRecording()){
+        LOGE("stopRecording failed");
+        return -1;
+    }
+
+    pRecord->releaseRecording();
+
+    delete pRecord;
+
+    return 0;
+}
+
+extern "C"
+void
+Java_com_lvhiei_androidtest_Tools_AudioRecorder_onRecordData(
+        JNIEnv *env,
+        jobject obj, jobject jByteBuffer, jint length) {
+    uint8_t *buffer = (uint8_t *) env->GetDirectBufferAddress(jByteBuffer);
+    if(!buffer){
+        return;
+    }
+
+    static FILE* pFILE = NULL;
+    if(!pFILE){
+        pFILE = fopen("/sdcard/android_test/jnitest.pcm", "w");
+    }
+
+    fwrite(buffer, 1, length, pFILE);
+    fflush(pFILE);
 }

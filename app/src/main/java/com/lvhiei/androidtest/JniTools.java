@@ -33,4 +33,5 @@ public class JniTools {
 
 
     public static native int nativeJniEnvTest();
+    public static native int nativeJniRecorderTest();
 }

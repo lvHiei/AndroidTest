@@ -99,6 +99,12 @@
                 android:text="JniEnv"
                 />
 
+            <Button
+                android:id="@+id/btn_test_jniAudioRecorder"
+                style="@style/TestButton"
+                android:text="Jni音频录音"
+                />
+
 
         </LinearLayout>
     </ScrollView>

@@ -143,7 +143,7 @@ bool JNIAudioRecorder::stopRecording(JNIEnv *env) {
 }
 
 bool JNIAudioRecorder::pauseRecording(JNIEnv *env, bool pause) {
-    return env->CallBooleanMethod(m_joInstance, m_jmPauseRecording);
+    return env->CallBooleanMethod(m_joInstance, m_jmPauseRecording, pause);
 }
 
 bool JNIAudioRecorder::releaseRecording(JNIEnv *env) {

@@ -33,7 +33,7 @@ public class AudioRecorder implements Runnable{
     ByteBuffer mReadBuffer = null;
 
     public AudioRecorder(){
-        this(AUDIO_SAMLPE_RATE, AUDIO_CHANNEL, AUDIO_FORMAT);
+        this(AUDIO_SAMLPE_RATE, AUDIO_CHANNEL);
     }
 
     public AudioRecorder(int samplerate, int channel){
@@ -76,6 +76,7 @@ public class AudioRecorder implements Runnable{
             return false;
         }
 
+        log.i("startRecording");
         try {
             mRecord.startRecording();
         }catch (IllegalStateException e){
@@ -141,6 +142,11 @@ public class AudioRecorder implements Runnable{
     }
 
     public boolean pause(boolean paused){
+        if(null == mRecord){
+            return false;
+        }
+
+        log.i("pauseRecording : " + paused );
         if(paused){
             if(mRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING){
                 return stop();
@@ -155,16 +161,7 @@ public class AudioRecorder implements Runnable{
 
 
     public boolean stop(){
-        try {
-            mRecord.stop();
-        }catch (IllegalStateException e){
-            log.e("stop AudioRecord got IllegalStateException");
-            return false;
-        }
-        catch (Throwable t){
-            log.e("stop AudioRecord got unknown error");
-            return false;
-        }
+        log.i("stopRecording");
 
         if(null != mReadThread){
             mbWantStop = true;
@@ -176,23 +173,42 @@ public class AudioRecorder implements Runnable{
             mReadThread = null;
         }
 
+        try {
+            if(mRecord != null){
+                mRecord.stop();
+            }
+        }catch (IllegalStateException e){
+            log.e("stop AudioRecord got IllegalStateException");
+            return false;
+        }
+        catch (Throwable t){
+            log.e("stop AudioRecord got unknown error");
+            return false;
+        }
+
         return true;
     }
 
 
     public boolean release(){
         mRecord.release();
+        mRecord = null;
         return true;
     }
 
     @Override
     public void run() {
         mReadBuffer = ByteBuffer.allocateDirect(mBufferSize);
-
+        int length = 0;
         while (!mbWantStop){
-            read(mReadBuffer, mBufferSize);
+            length = read(mReadBuffer, mBufferSize);
+            if(length <= mBufferSize){
+                onRecordData(mReadBuffer, length);
+            }
         }
 
         mReadBuffer = null;
     }
+
+    private native void onRecordData(ByteBuffer buffer, int length);
 }
